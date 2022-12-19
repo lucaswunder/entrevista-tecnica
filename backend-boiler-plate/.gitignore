@@ -1,6 +1,6 @@
 # Auto-generated
 node_modules
 package-lock.json
-
+coverage
 # Environment
 .env
