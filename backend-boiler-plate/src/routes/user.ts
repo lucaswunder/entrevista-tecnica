@@ -1,13 +1,49 @@
 import express from 'express'
-import User from '../controllers/user'
-import validation from '../validation/user'
 
-const routes = express.Router()
+import validator from '../validation/validator'
+import requestHandler from '../_shared/requestHandler'
 
-routes.post('/', validation.upsert, User.create)
-routes.get('/:id', validation.objectId, User.getOne)
-routes.get('/', User.getAll)
-routes.put('/:id', validation.objectId, validation.upsert, User.update)
-routes.delete('/:id', validation.objectId, User.delete)
+import userSchema from '../schemas/user'
 
-export default routes
+interface IContext {
+    controllersUser: {
+        create: Function
+        delete: Function
+        getOne: Function
+        getAll: Function
+        update: Function
+    }
+}
+
+export default (ctx: IContext) => {
+    const User = ctx.controllersUser
+    const routes = express.Router()
+
+    routes.post(
+        '/',
+        validator.validate(userSchema.upsert),
+        requestHandler(User.create),
+    )
+
+    routes.get(
+        '/:id',
+        validator.validate(userSchema.documentId),
+        requestHandler(User.getOne),
+    )
+
+    routes.get('/', requestHandler(User.getAll))
+
+    routes.put(
+        '/:id',
+        validator.validate(userSchema.update),
+        requestHandler(User.update),
+    )
+
+    routes.delete(
+        '/:id',
+        validator.validate(userSchema.documentId),
+        requestHandler(User.delete),
+    )
+
+    return routes
+}
