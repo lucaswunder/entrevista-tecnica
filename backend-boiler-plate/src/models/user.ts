@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose'
+import mongoose, { model, Schema } from 'mongoose'
 
 interface IUser {
     _id?: string
@@ -15,4 +15,6 @@ const schema = new Schema<IUser>({
     dob: Date,
 })
 
-export default model<IUser>('user', schema, 'users')
+const userModel = model<IUser>('User', schema) as mongoose.Model<IUser>
+
+export default () => userModel
